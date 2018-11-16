@@ -1,0 +1,135 @@
+<html>
+
+<head>
+
+<link rel='stylesheet' href='css/egg_dataviz.css'/>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://www.google.com/jsapi"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="js/about_trigger.js"></script>
+
+</head>
+<body onload="read_data()">
+  <div class="header">
+    Insect eggs
+  </div>
+  <div class="intro">
+    <span style="color:#E87425;font-size:24px"> 
+      </br>Insects lay eggs of all shapes and sizes</br></br>
+    </span>
+    From microscopic wasp eggs, to beetle eggs the size of a blueberry, and everything in between</br></br>
+    <span style="color:#719CAA;font-size:28px"> 
+    </b>Want to explore egg diversity? Check out the plot below.  </b>
+    </span></br></br></br></br>
+    Eggs are arranged by their <span style="color:#2E9B00"><b>size</b></span> and <span style="color:#2E9B00"><b>shape</span></b> </br> Wide, flat eggs are on the left, and long, skinny eggs are on the right </br> Hover over a point to see the source, and for <span style="color:#2E9B00"><b>larger points you can see an example image</b></span></br> And <span style="color:#2E9B00"><b>try toggling the buttons below</span></b> to compare other egg features
+  </div>
+	<div id="div_container">
+    <div id="svg_div">
+      <div id = "search_by_name">
+        <label class = "input_search">
+        <input id="input_search" onkeyup="highlight_searched()" placeholder="search by taxonomic name"></input>
+        </label>
+      </div>
+    </div>
+    <div id="option_box">
+      Toggle the buttons to compare egg with different features,</br> and try transforming the data to visualize eggs at different scales. 
+      <div class="x_axis_div">
+        <div class="radio_title">x-axis</div>
+        <label class="radio radio_button">Length
+          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="X1" />
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Width
+          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="X2" />
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Angle of curvature
+          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="curv" />
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Asymmetry
+          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="asym" />
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Volume
+          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="vol" />
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Aspect Ratio
+          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="ar"   checked="checked"/>
+          <div class="button_indicator"></div>
+        </label>
+      </div>
+      <div class="y_axis_div">
+        <div class="radio_title">y-axis</div>
+        <label class="radio radio_button">Width
+          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="X2"/>
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Length
+          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="X1"/>
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Angle of curvature
+          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="curv" />
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Asymmetry
+          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="asym" />
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Volume
+          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="vol"  checked="checked" />
+          <div class="button_indicator"></div>
+        </label>
+        <label class="radio radio_button">Aspect Ratio
+          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="ar" />
+          <div class="button_indicator"></div>
+        </label>
+      </div>
+      <div class="color_div">
+      <div class="radio_title">color</div>
+      <label class="radio radio_button">Clade
+        <input type="radio" name="color_radio" onchange="change_color()" value="clade"  checked="checked" />
+        <div class="button_indicator"></div>
+      </label>
+      <label class="radio radio_button">Width
+        <input type="radio" name="color_radio" onchange="change_color()" value="X2"/>
+        <div class="button_indicator"></div>
+      </label>
+      <label class="radio radio_button">Length
+        <input type="radio" name="color_radio" onchange="change_color()" value="X1"/>
+        <div class="button_indicator"></div>
+      </label>
+      <label class="radio radio_button">Angle of curvature
+        <input type="radio" name="color_radio" onchange="change_color()" value="curv" />
+        <div class="button_indicator"></div>
+      </label>
+      <label class="radio radio_button">Asymmetry
+        <input type="radio" name="color_radio" onchange="change_color()" value="asym" />
+        <div class="button_indicator"></div>
+      </label>
+      <label class="radio radio_button">Volume
+        <input type="radio" name="color_radio" onchange="change_color()" value="vol" />
+        <div class="button_indicator"></div>
+      </label>
+      <label class="radio radio_button">Aspect Ratio
+        <input type="radio" name="color_radio" onchange="change_color()" value="ar" />
+        <div class="button_indicator"></div>
+      </label>
+      </div>
+      <label class="switch" id="transform_switch">     
+        <input id="transform_slider" type="checkbox" onchange="change_axes()">
+        <span class="slider"></span>
+        <div id="transformed">transformed</div>
+        <div id="untransformed">untransformed</div>
+      </label>
+      <div id="color_legend">
+        <div class="radio_title">color legend</div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="js/egg_dataviz.js"></script>
+</html>

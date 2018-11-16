@@ -1,0 +1,328 @@
+@charset "UTF-8";
+@import url(//fonts.googleapis.com/css?family=Open+Sans);
+/* CSS Document */ 
+/*root stylesheet*/
+
+body {
+	background-color: white;
+	cursor:default;
+	font-family: "Open Sans";
+}
+
+select {
+    border: none;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 16px;
+}
+
+input {
+    border: 2px solid #719CAA;
+    font-size:14  px;
+    border-radius: 2px;
+    width: 300px;
+}
+
+div.image_tooltip {   
+    position: absolute;
+    left: 700px;
+    top: 150px;
+    text-align: center;         
+    width: 270px; 
+    height: 500px;                   
+    font: 12px sans-serif;  
+    color: black;  
+    background: #efa06a; 
+    border: 2px solid gray;        
+    border-radius: 8px;         
+    pointer-events: none;
+}
+
+div.minitext {  
+    margin: 15px auto; 
+    padding: 10px;
+    position: relative;
+}
+
+div.minipic_div {  
+    margin: auto; 
+    height: 250px;
+    width: 250px;
+    position: relative;
+}
+
+div.minipic_div img {  
+    max-height: 100%;  
+    max-width: 100%; 
+    width: auto;
+    height: auto;
+    position: absolute;  
+    top: 30;  
+    bottom: 0;  
+    left: 0;  
+    right: 0;  
+    margin: auto;
+}
+
+.header {
+  padding: 1px;
+  width: 100%;
+  text-align: center;
+  background: #719CAA;
+  color: white;
+  letter-spacing: 20px;
+  font-size: 120px;
+}
+
+.intro {
+  position: relative;
+  margin: 20px auto;
+  width: 100%;
+  text-align: center;
+}
+
+#div_container {
+    position: relative;
+    margin: 0px auto;
+    width: 800px;
+    height: 800px;
+    text-align: center;
+}
+
+#svg_div {
+    position: relative;
+    width: 750px;
+    margin: 0px auto;
+}
+
+#option_box {
+    border: 2px solid #719CAA;        
+    border-radius: 8px;  
+    position: relative;
+    padding-top: 5px;
+    margin: 0px auto;
+    height: 375px;
+    width: 650px;
+}
+
+.gradient_legend {
+  width: 20px;
+  height: 100px;
+}
+
+.stop-top {
+  stop-color: #3f51b5;
+}
+
+.stop-bottom {
+  stop-color: #009688;
+}
+
+.filled {
+  fill: url(#main_gradient);
+}
+
+#search_by_name {
+    position: relative;
+    left: 0px;
+    top: 20px;
+}
+
+.scatter_border {
+  fill: none;
+  stroke: #ccc;
+}
+
+.radio_title {
+  position: relative;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  padding-left: 20px;
+  text-decoration: underline;
+  font-size: 15px;
+  width: 100px;
+}
+
+.y_axis_div {
+  position: absolute;
+  left: 20px;
+  top: 75px;
+  width: 100px;
+  text-align: left;
+}
+
+.x_axis_div {
+  position: absolute;
+  left: 170px;
+  top: 75px;
+  width: 100px;
+  text-align: left;
+}
+
+.color_div {
+  position: absolute;
+  left: 320px;
+  top: 75px;
+  width: 100px;
+  text-align: left;
+}
+
+#color_legend {
+  position: absolute;
+  left: 470px;
+  top: 75px;
+  width: 200px;
+  height: 250;
+  font-size: 12px;
+
+}
+
+#transform_switch {
+    position: relative;
+    display: block;
+    left: 50px;
+    top: 300px;
+    width: 200px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: 12px;
+    text-align: center;
+    color: white;
+}
+
+#transformed {
+    position: absolute;
+    left: 0px;
+    width: 100px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#untransformed {
+    position: absolute;
+    left: 100px;
+    width: 100px;
+    z-index: 1;
+    pointer-events: none;
+} 
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 0.5px;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 12px;
+    fill: #000000;
+}
+
+
+/* The switch - the box around the slider */
+.switch {
+  height: 15px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #C0C0C0;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 15px;
+  width: 100px;
+  left: 0px;
+  bottom: 0px;
+  background-color: #719CAA;
+  -webkit-transition: .15s;
+  transition: .15s;
+}
+
+.switch input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+.switch input:checked + .slider:before {
+  -webkit-transform: translateX(100px);
+  -ms-transform: translateX(100px);
+  transform: translateX(100px);
+}
+
+.radio {
+  text-align: left;
+  font-size: 12px;
+  position: relative;
+  margin-bottom: 15px;
+  padding-left: 30px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.radio input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+.button_indicator {
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 15px;
+  height: 15px;
+  background: #ccc;
+}
+
+.radio_button .button_indicator {
+  border-radius: 50%;
+}
+
+/* Hover and focus states */
+.radio:hover input ~ .button_indicator,
+.radio input:focus ~ .button_indicator {
+  background: #C0c0c0;
+}
+
+/* Checked state */
+.radio input:checked ~ .button_indicator {
+  background: #719CAA;
+}
+
+/* Disabled state */
+.radio input:disabled ~ .button_indicator {
+  pointer-events: none;
+  opacity: .6;
+  background: #e6e6e6;
+}
+
+/* Check mark */
+.button_indicator:after {
+  position: absolute;
+  display: none;
+  content: '';
+}
+
+/* Show check mark */
+.radio input:checked ~ .button_indicator:after {
+  display: block;
+}
+
+/* Disabled circle colour */
+.radio_button input:disabled ~ .button_indicator:after {
+  background: #7b7b7b;
+}

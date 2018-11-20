@@ -17,16 +17,16 @@ var color = d3.scale.ordinal()
   .range(["#BE0000","#2E9B00","#2056CE","#E87425","#22CED5","#3A175F","#F2C406","#D454E2","#878787"]);
 
 // dictionary of data types
-var variable_dict = {"X2": "Width (mm)", 
-                    "X1": "Length (mm)", 
+var variable_dict = {"txtX2": "Width (mm)", 
+                    "txtX1": "Length (mm)", 
                     "curv": "Angle of curvature (rad)",
                     "asym": "Asymmetry",
-                    "vol": "Volume (mm3)",
-                    "ar": "Aspect ratio",
-                    "logX2": "Width (mm) - log10 scale", 
-                    "logX1": "Length (mm) - log10 scale", 
-                    "logvol": "Volume (mm3) - log10 scale", 
-                    "logar": "Aspect Ratio - log10 scale", 
+                    "txtvol": "Volume (mm3)",
+                    "txtar": "Aspect ratio",
+                    "logtxtX2": "Width (mm) - log10 scale", 
+                    "logtxtX1": "Length (mm) - log10 scale", 
+                    "logtxtvol": "Volume (mm3) - log10 scale", 
+                    "logtxtar": "Aspect Ratio - log10 scale", 
                     "sqasym": "Asymmetry - square root scale" , 
                     "sqcurv": "Angle of curvature (rad) - square root scale"};
 
@@ -54,8 +54,8 @@ var minipic = minipic_div.append("img")
     .attr("id","minipic");
 
 // scatterplot axes
-var x_axis_radio = "logar";
-var y_axis_radio = "logvol";
+var x_axis_radio = "logtxtar";
+var y_axis_radio = "logtxtvol";
 var transform_axes = "2";
 
 // Length and Width
@@ -114,12 +114,12 @@ var eggAxisx_svg;
         .tickSize(0,0)
 
 
-var transform_dict = {"X1": "logX1", 
-                    "X2": "logX2",  
+var transform_dict = {"txtX1": "logtxtX1", 
+                    "txtX2": "logtxtX2",  
                     "asym": "sqasym",  
                     "curv": "sqcurv",  
-                    "vol": "logvol",  
-                    "ar": "logar"};
+                    "txtvol": "logtxtvol",  
+                    "txtar": "logtxtar"};
 
 function change_color() {
     color_radio = document.getElementsByName('color_radio');
@@ -222,7 +222,7 @@ function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
 }
 
 function get_lims(variable,transform) {
-    if(variable == "X1" | variable == "X2") {
+    if(variable == "txtX1" | variable == "txtX2") {
         if(transform == true){
             low = low_lim
             high = high_lim
@@ -231,7 +231,7 @@ function get_lims(variable,transform) {
             high = high_lim_log
             variable = transform_dict[variable]
         }
-    } else if(variable == "vol") {
+    } else if(variable == "txtvol") {
         if(transform == true){
             low = low_vol
             high = high_vol
@@ -240,7 +240,7 @@ function get_lims(variable,transform) {
             high = high_logvol
             variable = transform_dict[variable]
         }
-    } else if(variable == "ar") {
+    } else if(variable == "txtar") {
         if(transform == true){
             low = low_ar
             high = high_ar
@@ -279,7 +279,7 @@ function change_axes() {
             var_x = x_axis_radio[i].value;
         }
     }
-    
+
     y_axis_radio = document.getElementsByName('y_axis_radio');
     var var_y;
     for(var i = 0; i < y_axis_radio.length; i++){

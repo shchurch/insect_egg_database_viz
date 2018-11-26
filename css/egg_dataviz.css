@@ -43,6 +43,8 @@ div.minitext {
     margin: 15px auto; 
     padding: 10px;
     position: relative;
+    color: white;
+    font-size: 12px;
 }
 
 div.minipic_div {  
@@ -218,6 +220,7 @@ div.minipic_div img {
   font-family: sans-serif;
   font-size: 14px;
   text-align: center;
+  color: white;
 }
 
 #transformed {
@@ -385,6 +388,7 @@ div.minipic_div img {
   padding-bottom: 2px;
   padding-top: 2px;
   -webkit-appearance: none;
+  color: white;
 }
 
 .custom-select:hover {
@@ -398,7 +402,7 @@ select:-moz-focusring {
 
 select:focus {
   outline: none;
-  box-shadow: 0px 0px 6px blue;
+  box-shadow: 0px 0px 6px #CCC;
 }
 
 #all-content {

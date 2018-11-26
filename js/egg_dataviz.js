@@ -2,8 +2,18 @@
 var egg_scatterplot_object;
 var egg_scatterplot_w = 600;
 var egg_scatterplot_h = 600;
-var svg_buf = 25; //pixels outside of main graph space that are included in the svg
+var svg_buf = 40; //pixels outside of main graph space that are included in the svg
 var text_search = document.getElementById("input_search");
+
+var axis_label_format = function(s) {
+    var tmp = d3.format(".1e")(s);
+    if (tmp.indexOf("e+0") > -1) {
+        return tmp.slice(0, tmp.indexOf("e+0"));
+    } else {
+        return tmp;
+    }
+}
+    
 
 var legend_object;
 
@@ -179,15 +189,33 @@ function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
     yAxisGrid = axis_y.ticks(10)
         .tickSize(-egg_scatterplot_w + svg_buf*2,0)
         .orient("left");
-
+  
     xAxisGrid = axis_x.ticks(10)
         .tickSize(-egg_scatterplot_h + svg_buf*2,0)
         .orient("bottom");
 
     egg_scatterplot_object.select(".x.axis")
-        .call(axis_x);
+        .call(axis_x            
+            .tickFormat(function(d) { 
+                if (var_x.slice(0,2) == 'sq') {
+                    return axis_label_format(d*d);
+                } else if (var_x.slice(0,3) == 'log') {
+                    return axis_label_format(Math.pow(10, d));
+                } else {
+                    return d;
+                }
+            })); 
     egg_scatterplot_object.select(".y.axis")
-        .call(axis_y);
+        .call(axis_y
+            .tickFormat(function(d) { 
+                if (var_y.slice(0,2) == 'sq') {
+                    return axis_label_format(d*d);
+                } else if (var_y.slice(0,3) == 'log') {
+                    return axis_label_format(Math.pow(10, d));
+                } else {
+                    return d;
+                }
+            })); 
 
     egg_scatterplot_object.selectAll(".egg_point")   
         .transition()
@@ -221,7 +249,6 @@ function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
 }
 
 function get_lims(variable,transform) {
-    console.log(variable);
     if(variable == "txtX1" | variable == "txtX2") {
         if(transform == true){
             low = low_lim
@@ -464,8 +491,8 @@ function make_egg_scatterplot() {
 
     egg_scatterplot_object.append("rect")
         .attr("class","scatter_border")
-        .attr("x",25)
-        .attr("y",25)
+        .attr("x",svg_buf)
+        .attr("y",svg_buf)
         .attr("width",egg_scatterplot_w - svg_buf*2)
         .attr("height",egg_scatterplot_h - svg_buf*2);
 
@@ -551,6 +578,7 @@ function load_egg_database() {
     // make the scatterplot svg
     make_egg_scatterplot();
     make_legend();
+    change_axes();
   
     // set up the autocomplete search bar
     for (let i=0; i<egg_database.length; i++) {
@@ -560,7 +588,6 @@ function load_egg_database() {
         }
     }
     var search_list = Array.from(searchable_set);
-    console.log(search_list.length);
     var awesom_jnk = new Awesomplete(text_search, {list: search_list});
     text_search.addEventListener("awesomplete-selectcomplete", highlight_searched);
     

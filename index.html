@@ -17,6 +17,10 @@
 <script src="https://www.google.com/jsapi"></script>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="js/about_trigger.js"></script>
+  
+<!-- Awesomplete by Lea Verou, under MIT License, from https://github.com/LeaVerou/awesomplete -->
+<link rel="stylesheet" href="awesomplete-gh-pages/awesomplete.css" />
+<script src="awesomplete-gh-pages/awesomplete.js" async></script>
 
 </head>
 <body onload="read_data()">
@@ -25,120 +29,72 @@
   </div>
   <div class="intro">
     <span style="color:#E87425;font-size:24px"> 
-      </br>Insects lay eggs of all shapes and sizes</br></br>
+      <br>Insects lay eggs of all shapes and sizes<br><br>
     </span>
-    From microscopic wasp eggs, to beetle eggs the size of a blueberry, and everything in between</br></br>
+    From microscopic wasp eggs, to beetle eggs the size of a blueberry, and everything in between<br><br>
     <span style="color:#719CAA;font-size:28px"> 
-    </b>Want to explore egg diversity? Check out the plot below  </b>
-    </span></br>Check out our <a href="http://biorxiv.org/cgi/content/short/471953v2">preprint article</a> that describes how this database was made</br></br></br>
-    Eggs are arranged by their <span style="color:#2E9B00"><b>size</b></span> and <span style="color:#2E9B00"><b>shape</span></b> </br> Wide, flat eggs are on the left, and long, skinny eggs are on the right </br> Hover over a point to see the source, and for <span style="color:#2E9B00"><b>larger points you can see an example image</b></span></br> And <span style="color:#2E9B00"><b>try toggling the buttons below</span></b> to compare other egg features
+    <b>Want to explore egg diversity? Check out the plot below  </b>
+    </span><br>Check out our <a href="http://biorxiv.org/cgi/content/short/471953v2">preprint article</a> that describes how this database was made<br><br><br>
+    Eggs are arranged by their <span style="color:#2E9B00"><b>size</b></span> and <span style="color:#2E9B00"><b>shape</b></span> <br> Wide, flat eggs are on the left, and long, skinny eggs are on the right <br> Hover over a point to see the source, and for <span style="color:#2E9B00"><b>larger points you can see an example image</b></span><br> And <span style="color:#2E9B00"><b>try clicking the axes labels or color options</b></span> to compare other egg features
   </div>
-	<div id="div_container">
+  <div id="div_container">
+    <div id="search_by_name">
+      <label class="input_search">Highlight by searching:</label>
+      <input id="input_search" class="awesomplete" onkeyup="highlight_searched()" >
+    </div>
     <div id="svg_div">
-      <div id = "search_by_name">
-        <label class = "input_search">
-        <input id="input_search" onkeyup="highlight_searched()" placeholder="search by taxonomic name"></input>
-        </label>
+      <div id="x_axis_label_container">
+        <div class="custom-dropdown" id="x_axis_dropdown">
+          <select class="custom-select" id="x_axis_select" onchange="change_axes()">
+            <option value="txtX1">Length (mm)</option>
+            <option value="txtX2">Width</option>
+            <option value="curv">Angle of curvature</option>
+            <option value="asym">Asymmetry</option>
+            <option value="txtvol">Volume</option>
+            <option value="txtar">Aspect Ratio</option>
+          </select>
+        </div>
+      </div>
+      <div id="y_axis_label_container">
+        <div class="custom-dropdown" id="y_axis_dropdown">
+          <select class="custom-select" id="y_axis_select" onchange="change_axes()">
+            <option value="txtX2">Width</option>
+            <option value="txtX1">Length</option>
+            <option value="curv">Angle of curvature</option>
+            <option value="asym">Asymmetry</option>
+            <option value="txtvol">Volume</option>
+            <option value="txtar">Aspect Ratio</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="color_legend">
+      <div id="color_by_text"><h2>Color points by:</h2></div>
+      <div class="custom-dropdown" id="color_by_dropdown">
+        <select class="custom-select" id="color_select" onchange="change_color()">
+          <option value="clade">Clade</option>
+          <option value="txtX2">Width</option>
+          <option value="txtX1">Length</option>
+          <option value="curv">Angle of curvature</option>
+          <option value="asym">Asymmetry</option>
+          <option value="txtvol">Volume</option>
+          <option value="txtar">Aspect Ratio</option>
+        </select>
       </div>
     </div>
     <div id="option_box">
       Toggle the buttons to compare egg with different features,</br> and try transforming the data to visualize eggs at different scales 
-      <div class="x_axis_div">
-        <div class="radio_title">x-axis</div>
-        <label class="radio radio_button">Length
-          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="txtX1" />
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Width
-          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="txtX2" />
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Angle of curvature
-          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="curv" />
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Asymmetry
-          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="asym" />
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Volume
-          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="txtvol" />
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Aspect Ratio
-          <input type="radio" name="x_axis_radio" onchange="change_axes()" value="txtar"   checked="checked"/>
-          <div class="button_indicator"></div>
-        </label>
-      </div>
-      <div class="y_axis_div">
-        <div class="radio_title">y-axis</div>
-        <label class="radio radio_button">Length
-          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="txtX1"/>
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Width
-          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="txtX2"/>
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Angle of curvature
-          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="curv" />
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Asymmetry
-          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="asym" />
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Volume
-          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="txtvol"  checked="checked" />
-          <div class="button_indicator"></div>
-        </label>
-        <label class="radio radio_button">Aspect Ratio
-          <input type="radio" name="y_axis_radio" onchange="change_axes()" value="txtar" />
-          <div class="button_indicator"></div>
-        </label>
-      </div>
-      <div class="color_div">
-      <div class="radio_title">color</div>
-      <label class="radio radio_button">Clade
-        <input type="radio" name="color_radio" onchange="change_color()" value="clade"  checked="checked" />
-        <div class="button_indicator"></div>
-      </label>
-      <label class="radio radio_button">Width
-        <input type="radio" name="color_radio" onchange="change_color()" value="txtX2"/>
-        <div class="button_indicator"></div>
-      </label>
-      <label class="radio radio_button">Length
-        <input type="radio" name="color_radio" onchange="change_color()" value="txtX1"/>
-        <div class="button_indicator"></div>
-      </label>
-      <label class="radio radio_button">Angle of curvature
-        <input type="radio" name="color_radio" onchange="change_color()" value="curv" />
-        <div class="button_indicator"></div>
-      </label>
-      <label class="radio radio_button">Asymmetry
-        <input type="radio" name="color_radio" onchange="change_color()" value="asym" />
-        <div class="button_indicator"></div>
-      </label>
-      <label class="radio radio_button">Volume
-        <input type="radio" name="color_radio" onchange="change_color()" value="txtvol" />
-        <div class="button_indicator"></div>
-      </label>
-      <label class="radio radio_button">Aspect Ratio
-        <input type="radio" name="color_radio" onchange="change_color()" value="txtar" />
-        <div class="button_indicator"></div>
-      </label>
-      </div>
       <label class="switch" id="transform_switch">     
         <input id="transform_slider" type="checkbox" onchange="change_axes()">
         <span class="slider"></span>
         <div id="transformed">transformed</div>
         <div id="untransformed">untransformed</div>
       </label>
-      <div id="color_legend">
-        <div class="radio_title">color legend</div>
-      </div>
     </div>
-      <span style="font-size:14px">This visualization was authored by Samuel H. Church and Milo S. Johsnon, data collected in collaboration with Seth Donoughe, Bruno A. S. de Medeiros, and Cassandra G. Extavour.</span>
+    
+  </div>
+  <div id="bottom_credits">
+   <span style="font-size:14px">This visualization was authored by Samuel H. Church and Milo S. Johnson, data collected in collaboration with Seth Donoughe, Bruno A. S. de Medeiros, and Cassandra G. Extavour.</span>
   </div>
 </body>
 <script src="js/egg_dataviz.js"></script>

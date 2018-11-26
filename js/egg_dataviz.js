@@ -1,9 +1,14 @@
 // height and width of the egg_scatterplot
 var egg_scatterplot_object;
-var egg_scatterplot_w = 750;
-var egg_scatterplot_h = 750;
+var egg_scatterplot_w = 600;
+var egg_scatterplot_h = 600;
+var svg_buf = 25; //pixels outside of main graph space that are included in the svg
+var text_search = document.getElementById("input_search");
 
 var legend_object;
+
+var searchable_cols = ["family", "superfamily", "subfamily", "suborder", "order", "tribe", "genus", "species", "name"];
+var searchable_set = new Set([]);
 
 // list of empty type cells in database
 var empty_things = {'':true, 'NA':true, 'na':true, 'missing': true, 'none': true, "": true};
@@ -92,11 +97,11 @@ var eggAxisx_svg;
     // scales
     var eggScalex = d3.scale.linear()
                     // set the pixel range that d3 uses to build the scatterplot
-                    .range([100,egg_scatterplot_w-100])
+                    .range([svg_buf,egg_scatterplot_w-svg_buf])
                     // choose the limits to display in that range
                     .domain([low_logar,high_logar]);
     var eggScaley = d3.scale.linear()
-                    .range([100,egg_scatterplot_h-100])
+                    .range([svg_buf,egg_scatterplot_h-svg_buf])
                     .domain([high_logvol,low_logvol]);
 
 
@@ -122,14 +127,8 @@ var transform_dict = {"txtX1": "logtxtX1",
                     "txtar": "logtxtar"};
 
 function change_color() {
-    color_radio = document.getElementsByName('color_radio');
-    var var_color;
-    for(var i = 0; i < color_radio.length; i++){
-        if(color_radio[i].checked){
-            var_color = color_radio[i].value;
-        }
-    }
-
+    var var_color = d3.select('#color_select').property("value");
+    console.log(var_color);
     make_legend();
 
     var colours = ["#440154","#481568","#482677","#453781","#3F4788","#39108C"
@@ -165,10 +164,10 @@ function change_color() {
 
 function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
     scale_x = d3.scale.linear()
-        .range([100,egg_scatterplot_w-100])
+        .range([svg_buf,egg_scatterplot_w-svg_buf])
         .domain([low_x,high_x]);
     scale_y = d3.scale.linear()
-        .range([100,egg_scatterplot_h-100])
+        .range([svg_buf,egg_scatterplot_h-svg_buf])
         .domain([high_y,low_y]);
 
     axis_x = d3.svg.axis()
@@ -178,11 +177,11 @@ function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
         .orient("left");
 
     yAxisGrid = axis_y.ticks(10)
-        .tickSize(-egg_scatterplot_w + 200,0)
+        .tickSize(-egg_scatterplot_w + svg_buf*2,0)
         .orient("left");
 
     xAxisGrid = axis_x.ticks(10)
-        .tickSize(-egg_scatterplot_h+ 200,0)
+        .tickSize(-egg_scatterplot_h + svg_buf*2,0)
         .orient("bottom");
 
     egg_scatterplot_object.select(".x.axis")
@@ -215,13 +214,14 @@ function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
                 return "block";
             } 
         });
-    eggAxisx_svg.select("#x_title")
+    d3.select("#x_title")
         .text(variable_dict[var_x]);
-    eggAxisy_svg.select("#y_title")
+    d3.select("#y_title")
         .text(variable_dict[var_y]);
 }
 
 function get_lims(variable,transform) {
+    console.log(variable);
     if(variable == "txtX1" | variable == "txtX2") {
         if(transform == true){
             low = low_lim
@@ -272,22 +272,9 @@ function get_lims(variable,transform) {
 }
 
 function change_axes() {
-    x_axis_radio = document.getElementsByName('x_axis_radio');
-    var var_x;
-    for(var i = 0; i < x_axis_radio.length; i++){
-        if(x_axis_radio[i].checked){
-            var_x = x_axis_radio[i].value;
-        }
-    }
+    var var_x = d3.select("#x_axis_select").property("value");
+    var var_y = d3.select("#y_axis_select").property("value");
 
-    y_axis_radio = document.getElementsByName('y_axis_radio');
-    var var_y;
-    for(var i = 0; i < y_axis_radio.length; i++){
-        if(y_axis_radio[i].checked){
-            var_y = y_axis_radio[i].value;
-        }
-    }   
-    
     transform_axes = document.getElementById("transform_slider").checked;
 
     var x_lims = get_lims(var_x,transform_axes);
@@ -303,22 +290,22 @@ d3.selection.prototype.moveToFront = function() {
 };
 
 
+
 function highlight_searched() {
-    highlight_select = document.getElementById("input_search").value;
-    var highlight = highlight_select.toUpperCase().replace(/ /g,"_");
+    var highlight = text_search.value;
     if (highlight != "") { 
          egg_scatterplot_object.selectAll(".egg_point")
         .style("stroke",function (d) {
-            for (var k in d) {
-                if (d[k].toUpperCase() == highlight) {
+            for (let c=0; c<searchable_cols.length; c++) {
+                if (d[searchable_cols[c]] == highlight) {
                     d3.select(this).moveToFront()
                     return "black";
                 }
             }
         })
         .style("opacity",function (d) {
-            for (var k in d) {
-                if (d[k].toUpperCase() == highlight) {
+            for (let c=0; c<searchable_cols.length; c++) {
+                if (d[searchable_cols[c]] == highlight) {
                     d3.select(this).moveToFront()
                     return "1";
                 }
@@ -341,13 +328,7 @@ function imageExists(image_url){
 }
 
 function make_legend() {
-    color_radio = document.getElementsByName('color_radio');
-    var var_color;
-    for(var i = 0; i < color_radio.length; i++){
-        if(color_radio[i].checked){
-            var_color = color_radio[i].value;
-        }
-    }
+    var var_color = d3.select('#color_select').property("value");
 
     var legend;
 
@@ -365,7 +346,7 @@ function make_legend() {
         legend = legend_object.selectAll(".legend")
             .data(color.domain())
             .enter().append("g")
-            .attr("transform", function (d, i) { return "translate(0," + i * 25 + ")"; });
+            .attr("transform", function (d, i) { return "translate(20," + i * 25 + ")"; });
 
         legend.append("circle")
                 .attr("class","legend_circle")
@@ -393,7 +374,7 @@ function make_legend() {
         legend = legend_object.selectAll(".legend")
             .data(heatmapColour.domain())
             .enter().append("g")
-            .attr("transform", function (d, i) { return "translate(0," + i * 25 + ")"; });
+            .attr("transform", function (d, i) { return "translate(20," + i * 25 + ")"; });
 
         legend.append("rect")
                 .attr("x",10)
@@ -465,26 +446,14 @@ function make_egg_scatterplot() {
         .attr("class", "y axis")
         .call(eggAxisy)
         .attr("transform", "translate(" + eggScalex(low_logar) + ", 0)");
-    // add text to the axes
-    eggAxisy_svg.append("text")
-        .attr("text-anchor", "middle")
-        // move the text to the middle of the axis
-        .attr("transform", "translate("+ -45 +","+((egg_scatterplot_h-80) / 2)+")rotate(-90)")
-        .text(variable_dict[y_axis_radio])
-        .attr("id", "y_title");
-    eggAxisx_svg.append("text")
-        .attr("text-anchor", "middle")
-        .attr("transform", "translate("+ ((egg_scatterplot_w-40) / 2) +","+(40)+")")
-        .text(variable_dict[x_axis_radio])
-        .attr("id", "x_title");
 
-        // grid
+    // grid
     var yAxisGrid = eggAxisy.ticks(10)
-        .tickSize(-egg_scatterplot_w + 200,0)
+        .tickSize(-egg_scatterplot_w + svg_buf*2,0)
         .orient("left");
 
     var xAxisGrid = eggAxisx.ticks(10)
-        .tickSize(-egg_scatterplot_h+ 200,0)
+        .tickSize(-egg_scatterplot_h + svg_buf*2,0)
         .orient("bottom");
 
     eggAxisx_svg.append("g")
@@ -495,10 +464,10 @@ function make_egg_scatterplot() {
 
     egg_scatterplot_object.append("rect")
         .attr("class","scatter_border")
-        .attr("x",100)
-        .attr("y",100)
-        .attr("width",egg_scatterplot_w-200)
-        .attr("height",egg_scatterplot_h-200);
+        .attr("x",25)
+        .attr("y",25)
+        .attr("width",egg_scatterplot_w - svg_buf*2)
+        .attr("height",egg_scatterplot_h - svg_buf*2);
 
     // build all of the points using d3
     egg_scatterplot_object.selectAll(".egg_point")
@@ -564,7 +533,7 @@ function make_egg_scatterplot() {
 function load_egg_database() {
     // get list of keys
     data_keys = Object.keys(egg_database[0]);
-
+  
     // call the object named svg_dv, make it an svg with a given height
     egg_scatterplot_object = d3.select("#svg_div")
         .append("svg")
@@ -577,12 +546,24 @@ function load_egg_database() {
     legend_object = d3.select("#color_legend")
         .append("svg")
         .attr("height","250")
-        .attr("width","250")
+        .attr("width","190")
 
     // make the scatterplot svg
     make_egg_scatterplot();
     make_legend();
-
+  
+    // set up the autocomplete search bar
+    for (let i=0; i<egg_database.length; i++) {
+        for (let c=0; c<searchable_cols.length; c++) {
+            let col = searchable_cols[c]; 
+            searchable_set.add(egg_database[i][col]);
+        }
+    }
+    var search_list = Array.from(searchable_set);
+    console.log(search_list.length);
+    var awesom_jnk = new Awesomplete(text_search, {list: search_list});
+    text_search.addEventListener("awesomplete-selectcomplete", highlight_searched);
+    
 }
 
 function read_data() { 

@@ -7,6 +7,7 @@ body {
 	background-color: white;
 	cursor:default;
 	font-family: "Open Sans";
+    min-width:1200px;
 }
 
 select {
@@ -25,8 +26,8 @@ input {
 
 div.image_tooltip {   
     position: absolute;
-    left: 700px;
-    top: 150px;
+    left: 620px;
+    top: 50px;
     text-align: center;         
     width: 270px; 
     height: 500px;                   
@@ -84,25 +85,25 @@ div.minipic_div img {
 #div_container {
     position: relative;
     margin: 0px auto;
-    width: 800px;
-    height: 800px;
+    width: 1200px;
+    height: 750px;
     text-align: center;
 }
 
 #svg_div {
-    position: relative;
-    width: 750px;
-    margin: 0px auto;
+  position: absolute;
+  left: 295px;
+  top: 30px;
+  width: 600px;
+  height: 600px;
+  margin: 0px auto;
 }
 
 #option_box {
-    border: 2px solid #719CAA;        
-    border-radius: 8px;  
-    position: relative;
-    padding-top: 5px;
-    margin: 0px auto;
-    height: 375px;
-    width: 650px;
+  position:absolute;
+  top:660px;
+  left: 265px;
+  width: 650px;
 }
 
 .gradient_legend {
@@ -125,7 +126,8 @@ div.minipic_div img {
 #search_by_name {
     position: relative;
     left: 0px;
-    top: 20px;
+    top: 8px;
+    margin-bottom: 15px;
 }
 
 .scatter_border {
@@ -159,6 +161,36 @@ div.minipic_div img {
   text-align: left;
 }
 
+.axis_label_div {
+  display: inline-block;
+  background-color: aqua;
+  border-radius: 10px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  position: relative;
+  margin: 0px auto;
+}
+.axis_label_div:hover {
+  background-color: chartreuse;
+}
+
+
+
+#x_axis_label_container {
+  position: absolute;
+  width: 100%;
+  top: 595px;
+}
+
+#y_axis_label_container {
+  position: absolute;
+  width: 100%;
+  top: 290px;
+  transform: translateX(-52%) rotate(-90deg);
+}
+
 .color_div {
   position: absolute;
   left: 320px;
@@ -169,48 +201,47 @@ div.minipic_div img {
 
 #color_legend {
   position: absolute;
-  left: 470px;
-  top: 75px;
-  width: 200px;
+  left: 70px;
+  top: 150px;
+  width: 190px;
   height: 250;
   font-size: 12px;
-
 }
 
 #transform_switch {
-    position: relative;
-    display: block;
-    left: 50px;
-    top: 300px;
-    width: 200px;
-    letter-spacing: 1px;
-    font-family: sans-serif;
-    font-size: 12px;
-    text-align: center;
-    color: white;
+  position: relative;
+  display: block;
+  margin: 0px auto;
+  width: 200px;
+  top: 5px;
+  letter-spacing: 1px;
+  font-family: sans-serif;
+  font-size: 12px;
+  text-align: center;
+  color: white;
 }
 
 #transformed {
-    position: absolute;
-    left: 0px;
-    width: 100px;
-    z-index: 1;
-    pointer-events: none;
+  position: absolute;
+  left: 0px;
+  width: 100px;
+  z-index: 1;
+  pointer-events: none;
 }
 
 #untransformed {
-    position: absolute;
-    left: 100px;
-    width: 100px;
-    z-index: 1;
-    pointer-events: none;
+  position: absolute;
+  left: 100px;
+  width: 100px;
+  z-index: 1;
+  pointer-events: none;
 } 
 
 .axis path,
 .axis line {
-    fill: none;
-    stroke: #ccc;
-    stroke-width: 0.5px;
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 0.5px;
 }
 
 .axis text {
@@ -325,4 +356,48 @@ div.minipic_div img {
 /* Disabled circle colour */
 .radio_button input:disabled ~ .button_indicator:after {
   background: #7b7b7b;
+}
+#input_search {
+  width: 200px;
+}
+
+#bottom_credits {
+  width:100%;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 50px;
+}
+
+#color_by_dropdown {
+  position: relative;
+  margin: 10px;
+}
+
+.custom-select {
+  text-align-last: center;
+  background-color: #999;
+  border-radius: 15px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  -webkit-appearance: none;
+}
+
+.custom-select:hover {
+  background-color: #CCC;
+}
+
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0px 0px 6px blue;
+}
+
+#all-content {
+  min-width:1200px;
 }

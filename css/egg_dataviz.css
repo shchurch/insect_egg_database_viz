@@ -13,7 +13,7 @@ body {
 select {
     border: none;
     border-radius: 4px;
-    background-color: white;
+    background-color: black;
     font-size: 16px;
 }
 
@@ -33,7 +33,7 @@ div.image_tooltip {
     height: 500px;                   
     font: 12px sans-serif;  
     color: black;  
-    background: #efa06a; 
+    background: #719CAA; 
     border: 2px solid gray;        
     border-radius: 8px;         
     pointer-events: none;
@@ -212,27 +212,28 @@ div.minipic_div img {
   position: relative;
   display: block;
   margin: 0px auto;
-  width: 200px;
+  width: 250px;
   top: 5px;
   letter-spacing: 1px;
   font-family: sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
-  color: white;
 }
 
 #transformed {
   position: absolute;
   left: 0px;
-  width: 100px;
+  top: 2.5px;
+  width: 125px;
   z-index: 1;
   pointer-events: none;
 }
 
 #untransformed {
   position: absolute;
-  left: 100px;
-  width: 100px;
+  top: 2.5px;
+  left: 125px;
+  width: 125px;
   z-index: 1;
   pointer-events: none;
 } 
@@ -253,7 +254,7 @@ div.minipic_div img {
 
 /* The switch - the box around the slider */
 .switch {
-  height: 15px;
+  height: 20px;
 }
 
 /* Hide default HTML checkbox */
@@ -276,10 +277,11 @@ div.minipic_div img {
   position: absolute;
   content: "";
   height: 15px;
-  width: 100px;
+  width: 122px;
   left: 0px;
   bottom: 0px;
-  background-color: #719CAA;
+  background: #719CAA; 
+  border: 2px solid gray;
   -webkit-transition: .15s;
   transition: .15s;
 }
@@ -289,9 +291,9 @@ div.minipic_div img {
 }
 
 .switch input:checked + .slider:before {
-  -webkit-transform: translateX(100px);
-  -ms-transform: translateX(100px);
-  transform: translateX(100px);
+  -webkit-transform: translateX(125px);
+  -ms-transform: translateX(125px);
+  transform: translateX(125px);
 }
 
 .radio {
@@ -375,7 +377,8 @@ div.minipic_div img {
 
 .custom-select {
   text-align-last: center;
-  background-color: #999;
+  background: #719CAA; 
+  border: 2px solid gray;
   border-radius: 15px;
   padding-left: 12px;
   padding-right: 12px;

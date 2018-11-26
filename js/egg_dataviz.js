@@ -583,7 +583,9 @@ function load_egg_database() {
     for (let i=0; i<egg_database.length; i++) {
         for (let c=0; c<searchable_cols.length; c++) {
             let col = searchable_cols[c]; 
-            searchable_set.add(egg_database[i][col]);
+            let formatted_entry = egg_database[i][col].replace('_', ' ')
+            searchable_set.add(formatted_entry);
+            egg_database[i][col] = formatted_entry;
         }
     }
     var search_list = Array.from(searchable_set);

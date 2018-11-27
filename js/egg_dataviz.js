@@ -4,15 +4,6 @@ var egg_scatterplot_w = 600;
 var egg_scatterplot_h = 600;
 var svg_buf = 40; //pixels outside of main graph space that are included in the svg
 var text_search = document.getElementById("input_search");
-
-var axis_label_format = function(s) {
-    var tmp = d3.format(".1e")(s);
-    if (tmp.indexOf("e+0") > -1) {
-        return tmp.slice(0, tmp.indexOf("e+0"));
-    } else {
-        return tmp;
-    }
-}
     
 
 var legend_object;
@@ -138,7 +129,6 @@ var transform_dict = {"txtX1": "logtxtX1",
 
 function change_color() {
     var var_color = d3.select('#color_select').property("value");
-    console.log(var_color);
     make_legend();
 
     var colours = ["#440154","#481568","#482677","#453781","#3F4788","#32648E","#2D718E","#287D8E","#238A8D","#1F968B","#20A386"
@@ -146,7 +136,7 @@ function change_color() {
     ,"#DCE318","#FDE725"];
 
     var heatmapColour = d3.scale.linear()
-      .domain(d3.range(0, 1, 1.0 / (colours.length - 1)))
+      .domain(d3.range(0, 1, 1.0 / (colours.length - 0)))
       .range(colours);
 
     if(var_color == "clade") {
@@ -196,10 +186,12 @@ function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
     egg_scatterplot_object.select(".x.axis")
         .call(axis_x            
             .tickFormat(function(d) { 
-                if (var_x.slice(0,2) == 'sq') {
-                    return axis_label_format(d*d);
+                if (var_x == 'logtxtvol') {
+                    return d3.format("1e")(Math.pow(10, d));
+                } else if (var_x.slice(0,2) == 'sq') {
+                    return Math.pow(d,2).toFixed(2);
                 } else if (var_x.slice(0,3) == 'log') {
-                    return axis_label_format(Math.pow(10, d));
+                    return Math.pow(10,d).toFixed(2);
                 } else {
                     return d;
                 }
@@ -207,15 +199,16 @@ function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
     egg_scatterplot_object.select(".y.axis")
         .call(axis_y
             .tickFormat(function(d) { 
-                if (var_y.slice(0,2) == 'sq') {
-                    return axis_label_format(d*d);
+                if (var_y == 'logtxtvol') {
+                    return d3.format("1e")(Math.pow(10, d));
+                } else if (var_y.slice(0,2) == 'sq') {
+                    return Math.pow(d,2).toFixed(2);
                 } else if (var_y.slice(0,3) == 'log') {
-                    return axis_label_format(Math.pow(10, d));
+                    return Math.pow(10,d).toFixed(2);
                 } else {
                     return d;
                 }
             })); 
-
     egg_scatterplot_object.selectAll(".egg_point")   
         .transition()
         .duration(1000)
@@ -362,7 +355,7 @@ function make_legend() {
     "#35B779", "#6DCD59", "#B4DE2C", "#FDE725"];
 
     var heatmapColour = d3.scale.linear()
-        .domain(d3.range(0, 1, 1.0 / (colours.length - 1)))
+        .domain(d3.range(0, 1, 1.0 / (colours.length - 0)))
         .range(colours);
 
     if(var_color == "clade") {
@@ -415,10 +408,15 @@ function make_legend() {
                 .attr("y",15)
                 .attr("dy", ".35em")
                 .text(function(d) {
-                    if (var_color == "asym" | var_color == "curv") {
-                        return Math.pow(color_scale(d),2).toFixed(2);                    
-                    } else { 
-                        return Math.pow(10,color_scale(d)).toFixed(2); 
+                    console.log(color_lims[2])
+                    if (color_lims[2] == 'logtxtvol') {
+                        return d3.format(".1e")(Math.pow(10, color_scale(d)));
+                    } else if (color_lims[2].slice(0,2) == 'sq') {
+                        return Math.pow(d,2).toFixed(2);
+                    } else if (color_lims[2].slice(0,3) == 'log') {
+                        return Math.pow(10,color_scale(d)).toFixed(2);
+                    } else {
+                        return d;
                     }
                 });  
     }      

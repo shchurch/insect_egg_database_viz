@@ -538,6 +538,7 @@ function make_egg_scatterplot() {
                 if(d["image"] in empty_things) {
                     return 2.5;
                 } else {
+                    d3.select(this).moveToFront()
                     return 4;
                 }
             })

@@ -412,7 +412,7 @@ function make_legend() {
                     if (color_lims[2] == 'logtxtvol') {
                         return d3.format(".1e")(Math.pow(10, color_scale(d)));
                     } else if (color_lims[2].slice(0,2) == 'sq') {
-                        return Math.pow(d,2).toFixed(2);
+                        return Math.pow(color_scale(d),2).toFixed(2);
                     } else if (color_lims[2].slice(0,3) == 'log') {
                         return Math.pow(10,color_scale(d)).toFixed(2);
                     } else {
@@ -553,6 +553,19 @@ function make_egg_scatterplot() {
                     .style("opacity", 0);
                 minipic.attr("src",'pics/tinytrans.gif');
             });
+
+    var new_lims_mousedown = '';
+    var new_lims_mouseup = '';
+    egg_scatterplot_object.on('mousedown',function(){
+        new_lims_mousedown = d3.mouse(this)
+    });
+
+    egg_scatterplot_object.on('mouseup',function(){
+        new_lims_mouseup = d3.mouse(this)
+        if (new_lims_mousedown[0] != new_lims_mouseup[0] | new_lims_mousedown[1] != new_lims_mouseup[1]) {
+            console.log(new_lims_mousedown,new_lims_mouseup);
+        }
+    });
 }
 
 function load_egg_database() {

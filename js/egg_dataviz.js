@@ -37,8 +37,9 @@ var variable_dict = {"txtX2": "Width (mm)",
                     "sqcurv": "Angle of curvature (rad) - square root scale"};
 
 // image tooltip div
-var div = d3.select("#svg_div").append("div")  
+var div = d3.select("#div_container").append("div")  
     // referred to as image_tooltip
+    .attr("id", "the_img_tt")
     .attr("class", "image_tooltip")   
     // usually invisible            
     .style("opacity", 0);
@@ -51,6 +52,23 @@ var minisource = div.append("div")
     .attr("id","minisource")
     .attr("class","minitext");
 
+var mini_xbox = div.append("img")
+    .attr("id", "mini_xbox")
+    .attr("src", "./x_icon.svg")
+    .attr("width", 25)
+    .attr("height", 25)
+    .on("click", function() {
+        if (minipic_locked) {
+            reset_focus();
+            minipic_locked = false;
+            div.transition()        
+                .duration(500)      
+                .style("opacity", 0);
+            minipic.attr("src",'pics/tinytrans.gif');
+            mini_xbox.style("display", "none");
+        }
+    });
+
 // minipic div in image tooltip
 var minipic_div = div.append("div")
     .attr("class","minipic_div");
@@ -58,6 +76,8 @@ var minipic_div = div.append("div")
 // image inside minipic div
 var minipic = minipic_div.append("img")
     .attr("id","minipic");
+
+var minipic_locked = false;
 
 // scatterplot axes
 var x_axis_radio = "logtxtar";
@@ -337,6 +357,13 @@ function highlight_searched() {
     };        
 }
 
+function reset_focus(){
+    egg_scatterplot_object.selectAll(".egg_point")
+        .style("stroke", "none")
+        .style("stroke-width", 1)
+        .attr("r", function(d) { return d3.select(this).attr("base_r") });
+}
+
 function imageExists(image_url){
     // check if an image file is found
     var http = new XMLHttpRequest()
@@ -534,7 +561,7 @@ function make_egg_scatterplot() {
                 }
             })
             // determine the size of the points based on image
-            .attr("r", function(d) {
+            .attr("base_r", function(d) {
                 if(d["image"] in empty_things) {
                     return 2.5;
                 } else {
@@ -542,16 +569,30 @@ function make_egg_scatterplot() {
                     return 4;
                 }
             })
+            .attr("r", function(d) { return d3.select(this).attr("base_r") })
             // set up the mouseover image_tooltip
             .on("mouseover", function(d){
-                show_image_tooltip(d);
+                if (!minipic_locked) {
+                    show_image_tooltip(d);
+                }
             })
             // make the image_tooltip div go away when you mouseout
             .on("mouseout", function(d){
-                div.transition()        
-                    .duration(500)      
-                    .style("opacity", 0);
-                minipic.attr("src",'pics/tinytrans.gif');
+                if (!minipic_locked) {
+                    div.transition()        
+                        .duration(500)      
+                        .style("opacity", 0);
+                    minipic.attr("src",'pics/tinytrans.gif');
+                }
+            })
+            .on("click", function(d){
+                show_image_tooltip(d);
+                reset_focus();
+                d3.select(this).attr('r', 6);
+                d3.select(this).style("stroke", 'black');
+                d3.select(this).style("stroke-width", 3);
+                minipic_locked = true;
+                mini_xbox.style("display", "block");
             });
 
     var new_lims_mousedown = '';

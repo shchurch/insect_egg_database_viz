@@ -562,15 +562,24 @@ function make_egg_scatterplot() {
                 }
             })
             .on("click", function(d){
-                console.log(d);
-                show_image_tooltip(d);
-                reset_focus();
-                d3.select(this).attr('r', 6);
-                d3.select(this).style("stroke", 'black');
-                d3.select(this).style("stroke-width", 3);
-                minipic_locked = true;
-                mini_xbox.style("display", "block");
-                d3.select(this).moveToFront()
+                if (!minipic_locked) {
+                    show_image_tooltip(d);
+                    reset_focus();
+                    d3.select(this).attr('r', 6);
+                    d3.select(this).style("stroke", 'black');
+                    d3.select(this).style("stroke-width", 3);
+                    minipic_locked = true;
+                    mini_xbox.style("display", "block");
+                    d3.select(this).moveToFront()
+                } else {
+                    reset_focus();
+                    minipic_locked = false;
+                    div.transition()        
+                    .duration(500)      
+                    .style("opacity", 0);
+                    minipic.attr("src",'pics/tinytrans.gif');
+                    mini_xbox.style("display", "none");                    
+                }
             });
     
     change_axes();

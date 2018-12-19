@@ -40,7 +40,11 @@
   <div id="div_container">
     <div id="search_by_name">
       <label class="input_search">Highlight by searching:</label>
-      <input id="input_search" class="awesomplete" onkeyup="highlight_searched()" >
+      <input id="input_search" class="awesomplete" onkeyup="only_show_some()" >
+      <div id="only_show_div">
+        Only show eggs with pictures:<input id="only_show_pics" type="checkbox" class="my_checkbox" onchange="only_show_some()">
+        Only show highlighted:<input id="only_show_high" type="checkbox" class="my_checkbox" onchange="only_show_some()">
+      </div>
     </div>
     <div id="svg_div">
       <div id="x_axis_label_container">

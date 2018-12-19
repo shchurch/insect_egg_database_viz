@@ -1,14 +1,11 @@
 // height and width of the egg_scatterplot
-var egg_scatterplot_object;
+var egg_scatterplot_object, legend_object, eggScalex, eggScaley, eggAxisx, eggAxisy, eggAxisy_svg, eggAxisx_svg; 
 var egg_scatterplot_w = 600;
 var egg_scatterplot_h = 600;
 var svg_buf = 40; //pixels outside of main graph space that are included in the svg
 var text_search = document.getElementById("input_search");
-    
 
-var legend_object;
-
-var searchable_cols = ["family", "superfamily", "subfamily", "suborder", "order", "tribe", "genus", "species", "name"];
+var searchable_cols = ["group", "family", "superfamily", "subfamily", "suborder", "order", "tribe", "genus", "species", "name"];
 var searchable_set = new Set([]);
 
 // list of empty type cells in database
@@ -39,7 +36,6 @@ var variable_dict = {"txtX2": "Width (mm)",
 // image tooltip div
 var div = d3.select("#div_container").append("div")  
     // referred to as image_tooltip
-    .attr("id", "the_img_tt")
     .attr("class", "image_tooltip")   
     // usually invisible            
     .style("opacity", 0);
@@ -80,65 +76,34 @@ var minipic = minipic_div.append("img")
 var minipic_locked = false;
 
 // scatterplot axes
-var x_axis_radio = "logtxtar";
-var y_axis_radio = "logtxtvol";
-var transform_axes = "2";
+var x_key, y_key;
 
-// Length and Width
-var eggAxisy_svg;
-var eggAxisx_svg;
+// limits
+var low_lim = 0
+var high_lim = 17
 
-    // limits
-    var low_lim = 0
-    var high_lim = 17
+var low_lim_log = -2.2
+var high_lim_log = 1.7
 
-    var low_lim_log = -2.2
-    var high_lim_log = 1.7
+var low_ar = 0;
+var high_ar = 30;
+var low_logar = -0.75;
+var high_logar = 1.5;
 
-    var low_ar = 0;
-    var high_ar = 30;
-    var low_logar = -0.75;
-    var high_logar = 1.5;
+var low_vol = 0;
+var high_vol = 500;
+var low_logvol = -6.5;
+var high_logvol = 3;
 
-    var low_vol = 0;
-    var high_vol = 500;
-    var low_logvol = -6.5;
-    var high_logvol = 3;
+var low_asym = 0;
+var high_asym = 1.5;
+var low_sqasym = 0;
+var high_sqasym = 1.25;
 
-    var low_asym = 0;
-    var high_asym = 1.5;
-    var low_sqasym = 0;
-    var high_sqasym = 1.25;
-
-    var low_curv = 0;
-    var high_curv = 3.5;
-    var low_sqcurv = 0;
-    var high_sqcurv = 1.9;
-
-    // scales
-    var eggScalex = d3.scale.linear()
-                    // set the pixel range that d3 uses to build the scatterplot
-                    .range([svg_buf,egg_scatterplot_w-svg_buf])
-                    // choose the limits to display in that range
-                    .domain([low_logar,high_logar]);
-    var eggScaley = d3.scale.linear()
-                    .range([svg_buf,egg_scatterplot_h-svg_buf])
-                    .domain([high_logvol,low_logvol]);
-
-
-    // axes
-    var eggAxisx = d3.svg.axis()
-                    .scale(eggScalex);
-    var eggAxisy = d3.svg.axis()
-                    .scale(eggScaley)
-                    .orient("left");
-
-    eggAxisx.ticks(10)
-        .tickSize(0,0)
-
-    eggAxisy.ticks(10)
-        .tickSize(0,0)
-
+var low_curv = 0;
+var high_curv = 3.5;
+var low_sqcurv = 0;
+var high_sqcurv = 1.9;
 
 var transform_dict = {"txtX1": "logtxtX1", 
                     "txtX2": "logtxtX2",  
@@ -181,86 +146,73 @@ function change_color() {
 }
     
 
-function set_axes(low_x,high_x,low_y,high_y,var_x,var_y) {
-    scale_x = d3.scale.linear()
+function set_axes(low_x,high_x,low_y,high_y) {
+    
+    eggScalex = d3.scale.linear()
         .range([svg_buf,egg_scatterplot_w-svg_buf])
         .domain([low_x,high_x]);
-    scale_y = d3.scale.linear()
+    eggScaley = d3.scale.linear()
         .range([svg_buf,egg_scatterplot_h-svg_buf])
         .domain([high_y,low_y]);
 
-    axis_x = d3.svg.axis()
-        .scale(scale_x);
-    axis_y = d3.svg.axis()
-        .scale(scale_y)
+    eggAxisx = d3.svg.axis()
+        .scale(eggScalex);
+    eggAxisy = d3.svg.axis()
+        .scale(eggScaley)
         .orient("left");
 
-    yAxisGrid = axis_y.ticks(10)
-        .tickSize(-egg_scatterplot_w + svg_buf*2,0)
-        .orient("left");
-  
-    xAxisGrid = axis_x.ticks(10)
-        .tickSize(-egg_scatterplot_h + svg_buf*2,0)
-        .orient("bottom");
-
-    egg_scatterplot_object.select(".x.axis")
-        .call(axis_x            
-            .tickFormat(function(d) { 
-                if (var_x == 'logtxtvol') {
-                    return d3.format("1e")(Math.pow(10, d));
-                } else if (var_x.slice(0,2) == 'sq') {
-                    return Math.pow(d,2).toFixed(2);
-                } else if (var_x.slice(0,3) == 'log') {
-                    return Math.pow(10,d).toFixed(2);
-                } else {
-                    return d;
-                }
-            })); 
-    egg_scatterplot_object.select(".y.axis")
-        .call(axis_y
-            .tickFormat(function(d) { 
-                if (var_y == 'logtxtvol') {
-                    return d3.format("1e")(Math.pow(10, d));
-                } else if (var_y.slice(0,2) == 'sq') {
-                    return Math.pow(d,2).toFixed(2);
-                } else if (var_y.slice(0,3) == 'log') {
-                    return Math.pow(10,d).toFixed(2);
-                } else {
-                    return d;
-                }
-            })); 
+    eggAxisx_svg.call(eggAxisx
+        .ticks(10).tickSize(-egg_scatterplot_h + svg_buf*2,0).orient("bottom")
+        .tickFormat(function(d) { 
+            if (x_key == 'logtxtvol') {
+                return d3.format("1e")(Math.pow(10, d));
+            } else if (x_key.slice(0,2) == 'sq') {
+                return Math.pow(d,2).toFixed(2);
+            } else if (x_key.slice(0,3) == 'log') {
+                return Math.pow(10,d).toFixed(2);
+            } else {
+                return d;
+            }
+        }));
+    eggAxisy_svg.call(eggAxisy
+        .ticks(10).tickSize(-egg_scatterplot_w + svg_buf*2,0).orient("left")
+        .tickFormat(function(d) { 
+            if (y_key == 'logtxtvol') {
+                return d3.format("1e")(Math.pow(10, d));
+            } else if (y_key.slice(0,2) == 'sq') {
+                return Math.pow(d,2).toFixed(2);
+            } else if (y_key.slice(0,3) == 'log') {
+                return Math.pow(10,d).toFixed(2);
+            } else {
+                return d;
+            }
+        })); 
+    
     egg_scatterplot_object.selectAll(".egg_point")   
         .transition()
         .duration(1000)
-        .attr("cx", function(d) { 
-            if(d[var_x] == "NA") {
+        .attr("cy", function(d) {
+            if (d[y_key] in empty_things) { 
                 return 0;
             } else {
-                return scale_x(parseFloat(d[var_x]));
+                return eggScaley(parseFloat(d[y_key]));
             } 
         })
-        .attr("cy", function(d) { 
-            if(d[var_y] == "NA") {
+        .attr("cx", function(d) {
+            if (d[x_key] in empty_things) { 
                 return 0;
             } else {
-                return scale_y(parseFloat(d[var_y]));
-            } 
+                return eggScalex(parseFloat(d[x_key]));
+            }
         });
-    egg_scatterplot_object.selectAll(".egg_point")
-        .attr("display", function(d) { 
-            if ((d[var_y] in empty_things) || (d[var_x] in empty_things)) { 
-                return "none";
-            } else {
-                return "block";
-            } 
-        });
+
     d3.select("#x_title")
-        .text(variable_dict[var_x]);
+        .text(variable_dict[x_key]);
     d3.select("#y_title")
-        .text(variable_dict[var_y]);
+        .text(variable_dict[y_key]);
 }
 
-function get_lims(variable,transform) {
+function get_lims(variable, transform) {
     if(variable == "txtX1" | variable == "txtX2") {
         if(transform == true){
             low = low_lim
@@ -268,7 +220,6 @@ function get_lims(variable,transform) {
         } else {
             low = low_lim_log
             high = high_lim_log
-            variable = transform_dict[variable]
         }
     } else if(variable == "txtvol") {
         if(transform == true){
@@ -277,7 +228,6 @@ function get_lims(variable,transform) {
         } else {
             low = low_logvol
             high = high_logvol
-            variable = transform_dict[variable]
         }
     } else if(variable == "txtar") {
         if(transform == true){
@@ -286,7 +236,6 @@ function get_lims(variable,transform) {
         } else {
             low = low_logar
             high = high_logar
-            variable = transform_dict[variable]
         }
     } else if(variable == "asym") {
         if(transform == true){
@@ -295,7 +244,6 @@ function get_lims(variable,transform) {
         } else {
             low = low_sqasym
             high = high_sqasym
-            variable = transform_dict[variable]
         }
     } else if(variable == "curv") {
         if(transform == true){
@@ -304,23 +252,32 @@ function get_lims(variable,transform) {
         } else {        
             low = low_sqcurv
             high = high_sqcurv
-            variable = transform_dict[variable]
         }
     }
-    return [low,high,variable]
+    return [low, high]
 }
 
 function change_axes() {
     var var_x = d3.select("#x_axis_select").property("value");
     var var_y = d3.select("#y_axis_select").property("value");
+    not_transformed = document.getElementById("transform_slider").checked;
+    if (not_transformed) {
+        x_key = var_x;
+        y_key = var_y;
+    } else {
+        x_key = transform_dict[var_x];
+        y_key = transform_dict[var_y];
+    }
+    
+    var x_lims = get_lims(var_x, not_transformed);
+    var y_lims = get_lims(var_y, not_transformed);
 
-    transform_axes = document.getElementById("transform_slider").checked;
+    set_axes(x_lims[0],x_lims[1],y_lims[0],y_lims[1]);
 
-    var x_lims = get_lims(var_x,transform_axes);
-    var y_lims = get_lims(var_y,transform_axes);
-
-    set_axes(x_lims[0],x_lims[1],y_lims[0],y_lims[1],x_lims[2],y_lims[2]);
+    check_display();
+    
 }
+
 
 d3.selection.prototype.moveToFront = function() {  
   return this.each(function(){
@@ -329,38 +286,91 @@ d3.selection.prototype.moveToFront = function() {
 };
 
 
-
-function highlight_searched() {
-    var highlight = text_search.value;
-    if (highlight != "") { 
-         egg_scatterplot_object.selectAll(".egg_point")
-        .style("stroke",function (d) {
-            for (let c=0; c<searchable_cols.length; c++) {
-                if (d[searchable_cols[c]] == highlight) {
-                    d3.select(this).moveToFront()
-                    return "black";
-                }
-            }
-        })
-        .style("opacity",function (d) {
-            for (let c=0; c<searchable_cols.length; c++) {
-                if (d[searchable_cols[c]] == highlight) {
-                    d3.select(this).moveToFront()
-                    return "1";
-                }
+function check_display() {
+    egg_scatterplot_object.selectAll(".egg_point")
+        .style("display",function (d) {
+            if ((d[x_key] in empty_things) || (d[y_key] in empty_things)) { 
+                return "none";
+            } else {
+                return d3.select(this).attr("base_display");
             }
         });
+}
+
+
+function highlight_from_click(text_to_use) {
+    text_search.value = text_to_use;
+    only_show_some();
+}
+
+
+function only_show_some() {
+    var pshow = d3.select("#only_show_pics").property('checked');
+    var hshow = d3.select("#only_show_high").property('checked');
+    var highlight = text_search.value;
+    if ((!hshow) && highlight != "") { 
+         egg_scatterplot_object.selectAll(".egg_point")
+            .style("stroke",function (d) {
+                for (let c=0; c<searchable_cols.length; c++) {
+                    if (d[searchable_cols[c]] == highlight) {
+                        d3.select(this).moveToFront()
+                        return "black";
+                    }
+                }
+            })
+            .style("opacity",function (d) {
+                for (let c=0; c<searchable_cols.length; c++) {
+                    if (d[searchable_cols[c]] == highlight) {
+                        d3.select(this).moveToFront()
+                        return "1";
+                    }
+                }
+            });
     } else {
         egg_scatterplot_object.selectAll(".egg_point")
             .style("stroke","none")
             .style("opacity", 1)
-    };        
+    }; 
+    
+    egg_scatterplot_object.selectAll(".egg_point")
+        .attr("base_display",function (d) {
+            var p_is_there = "block";
+            if(d["image"] in empty_things) {
+                p_is_there = "none";
+            }
+            if (hshow && (highlight != "")) {
+                var h_is_there = "none";
+                for (let c=0; c<searchable_cols.length; c++) {
+                    if (d[searchable_cols[c]] == highlight) {
+                        h_is_there = "block";
+                    }
+                }
+                if (!pshow) {
+                    return h_is_there;
+                } else {
+                    if (p_is_there == "block") {
+                        return h_is_there;
+                    } else {
+                        return "none";
+                    }
+                }
+            } else {
+                if (pshow) {
+                    return p_is_there;
+                } else {
+                    return "block";
+                }
+            }
+        });
+    
+    check_display();
+    
 }
 
 function reset_focus(){
     egg_scatterplot_object.selectAll(".egg_point")
         .style("stroke", "none")
-        .style("stroke-width", 1)
+        .style("stroke-width", 2)
         .attr("r", function(d) { return d3.select(this).attr("base_r") });
 }
 
@@ -384,15 +394,20 @@ function make_legend() {
     var heatmapColour = d3.scale.linear()
         .domain(d3.range(0, 1, 1.0 / (colours.length - 0)))
         .range(colours);
+    
+    legend_object.html(null); // deletes all previous legend elements
 
     if(var_color == "clade") {
-        legend_object.selectAll("g")
-            .attr("display","none");
 
         legend = legend_object.selectAll(".legend")
             .data(color.domain())
-            .enter().append("g")
-            .attr("transform", function (d, i) { return "translate(20," + i * 25 + ")"; });
+            .enter()
+            .append("g")
+                .attr("class", "clade_legend_element")
+                .attr("transform", function (d, i) { return "translate(20," + i * 25 + ")"; })
+                .on("click", function(d) {
+                        highlight_from_click(d)
+                    });;
 
         legend.append("circle")
                 .attr("class","legend_circle")
@@ -406,7 +421,7 @@ function make_legend() {
                 .attr("x",30)
                 .attr("y",14)
                 .attr("dy", ".35em")
-                .text(function(d) { return d; });  
+                .text(function(d) { return d; }); 
     } else {
         legend_object.selectAll("g")
             .attr("display","none");
@@ -487,34 +502,21 @@ function show_image_tooltip(datum) {
     
 }
 
-function make_egg_scatterplot() { 
+function make_egg_scatterplot() {
+    
     // set up the axes
     eggAxisx_svg = egg_scatterplot_object.append("g")
-        .attr("class", "x axis")
-        .call(eggAxisx)
-        .attr("transform", "translate(0," + eggScaley(low_logvol) + ")");
+        .attr("id", "x_axis")
+        .attr("class", "my_axis")
+        .attr("transform", "translate(0," + String(egg_scatterplot_h-svg_buf) + ")");
+        
     eggAxisy_svg = egg_scatterplot_object.append("g")
-        .attr("class", "y axis")
-        .call(eggAxisy)
-        .attr("transform", "translate(" + eggScalex(low_logar) + ", 0)");
-
-    // grid
-    var yAxisGrid = eggAxisy.ticks(10)
-        .tickSize(-egg_scatterplot_w + svg_buf*2,0)
-        .orient("left");
-
-    var xAxisGrid = eggAxisx.ticks(10)
-        .tickSize(-egg_scatterplot_h + svg_buf*2,0)
-        .orient("bottom");
-
-    eggAxisx_svg.append("g")
-        .call(xAxisGrid);
-
-    eggAxisy_svg.append("g")
-        .call(yAxisGrid);
+        .attr("id", "y_axis")
+        .attr("class", "my_axis")
+        .attr("transform", "translate(" + String(svg_buf) + ", 0)");
 
     egg_scatterplot_object.append("rect")
-        .attr("class","scatter_border")
+        .attr("id", "scatter_border")
         .attr("x",svg_buf)
         .attr("y",svg_buf)
         .attr("width",egg_scatterplot_w - svg_buf*2)
@@ -530,35 +532,9 @@ function make_egg_scatterplot() {
             // set the fixed qualities of the points
             .attr("stroke-width", 2)
             .attr("opacity", 1)
-            // check for egg measurements, display point if present
-            .attr("display", function(d) { 
-                var y_key = y_axis_radio;
-                var x_key = x_axis_radio;
-                if ((d[y_key] in empty_things) || (d[x_key] in empty_things)) { 
-                    return "none";
-                } else {
-                    return "block";
-                } 
-            })
+            .attr("base_display", "block")
             // color the points by group
             .style("fill", function(d) { return color(d["group"])
-            })
-            // determine the position of the points based on measurement
-            .attr("cy", function(d) {
-                var y_key = y_axis_radio;
-                if (d[y_key] in empty_things) { 
-                    return 0;
-                } else {
-                    return eggScaley(parseFloat(d[y_axis_radio]));
-                } 
-            })
-            .attr("cx", function(d) {
-                var x_key = x_axis_radio;
-                if (d[x_key] in empty_things) { 
-                    return 0;
-                } else {
-                    return eggScalex(parseFloat(d[x_axis_radio]));
-                }
             })
             // determine the size of the points based on image
             .attr("base_r", function(d) {
@@ -586,6 +562,7 @@ function make_egg_scatterplot() {
                 }
             })
             .on("click", function(d){
+                console.log(d);
                 show_image_tooltip(d);
                 reset_focus();
                 d3.select(this).attr('r', 6);
@@ -593,7 +570,10 @@ function make_egg_scatterplot() {
                 d3.select(this).style("stroke-width", 3);
                 minipic_locked = true;
                 mini_xbox.style("display", "block");
+                d3.select(this).moveToFront()
             });
+    
+    change_axes();
 
     var new_lims_mousedown = '';
     var new_lims_mouseup = '';
@@ -643,7 +623,7 @@ function load_egg_database() {
     }
     var search_list = Array.from(searchable_set);
     var awesom_jnk = new Awesomplete(text_search, {list: search_list});
-    text_search.addEventListener("awesomplete-selectcomplete", highlight_searched);
+    text_search.addEventListener("awesomplete-selectcomplete", only_show_some);
     
 }
 

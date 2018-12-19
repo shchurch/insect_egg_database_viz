@@ -110,10 +110,13 @@ var transform_dict = {"txtX1": "logtxtX1",
                     "asym": "sqasym",  
                     "curv": "sqcurv",  
                     "txtvol": "logtxtvol",  
-                    "txtar": "logtxtar"};
+                    "txtar": "logtxtar",
+                    "clade": "clade"};
 
 function change_color() {
     var var_color = d3.select('#color_select').property("value");
+    var var_key = transform_dict[var_color];
+
     make_legend();
 
     var colours = ["#440154","#481568","#482677","#453781","#3F4788","#32648E","#2D718E","#287D8E","#238A8D","#1F968B","#20A386"
@@ -135,11 +138,11 @@ function change_color() {
             .range([0,1]);
         egg_scatterplot_object.selectAll(".egg_point")
             .style("fill", function(d) {
-                if(d[color_lims[2]] == "NA") {
+                if(d[var_key] == "NA") {
                     return "#cccccc";
                 } else {
                     d3.select(this).moveToFront()
-                    return heatmapColour(color_scale(d[color_lims[2]]));
+                    return heatmapColour(color_scale(d[var_key]));
                 }
         }); 
     }
@@ -385,6 +388,8 @@ function imageExists(image_url){
 
 function make_legend() {
     var var_color = d3.select('#color_select').property("value");
+    var var_key = transform_dict[var_color];
+
 
     var legend;
 
@@ -450,12 +455,11 @@ function make_legend() {
                 .attr("y",15)
                 .attr("dy", ".35em")
                 .text(function(d) {
-                    console.log(color_lims[2])
-                    if (color_lims[2] == 'logtxtvol') {
+                    if (var_key == 'logtxtvol') {
                         return d3.format(".1e")(Math.pow(10, color_scale(d)));
-                    } else if (color_lims[2].slice(0,2) == 'sq') {
+                    } else if (var_key.slice(0,2) == 'sq') {
                         return Math.pow(color_scale(d),2).toFixed(2);
-                    } else if (color_lims[2].slice(0,3) == 'log') {
+                    } else if (var_key.slice(0,3) == 'log') {
                         return Math.pow(10,color_scale(d)).toFixed(2);
                     } else {
                         return d;
@@ -562,6 +566,7 @@ function make_egg_scatterplot() {
                 }
             })
             .on("click", function(d){
+                text_search.value = "";
                 if (!minipic_locked) {
                     show_image_tooltip(d);
                     reset_focus();

@@ -19,6 +19,17 @@ var color = d3.scale.ordinal()
   .domain(["Hymenoptera","Condylognatha","Antliophora","Neuropteroidea","Amphiesmenoptera","Polyneoptera","Palaeoptera","Apterygota","Psocodea"])
   .range(["#BE0000","#2E9B00","#2056CE","#E87425","#22CED5","#3A175F","#F2C406","#D454E2","#878787"]);
 
+var common_name_dict = {
+    "Hymenoptera": "ants, bees, wasps",
+    "Condylognatha": "bugs, thrips",
+    "Antliophora": "flies, fleas",
+    "Neuropteroidea": "lacewings, beetles",
+    "Amphiesmenoptera": "moths, butterflies",
+    "Polyneoptera": "crickets, stickbugs",
+    "Palaeoptera": "dragonflies, damselflies",
+    "Apterygota": "springtails, silverfish",
+    "Psocodea": "lice"};
+
 // dictionary of data types
 var variable_dict = {"txtX2": "Width (mm)", 
                     "txtX1": "Length (mm)", 
@@ -414,6 +425,7 @@ function make_legend() {
                         highlight_from_click(d)
                     });;
 
+
         legend.append("circle")
                 .attr("class","legend_circle")
                 .attr("cx",13)
@@ -426,7 +438,7 @@ function make_legend() {
                 .attr("x",30)
                 .attr("y",14)
                 .attr("dy", ".35em")
-                .text(function(d) { return d; }); 
+                .text(function(d) { return common_name_dict[d]; }); 
     } else {
         legend_object.selectAll("g")
             .attr("display","none");
